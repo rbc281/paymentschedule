@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PAF Calculator</title>
+
+<style>
+  :root {
+    --dark: #062f3a;
+    --dark2: #0b2733;
+    --green: #67c34f;
+    --light-gray: #f0f2f6;
+    --mid-gray: #d9dce5;
+    --text: #071d2a;
+    --muted: #8b9099;
+    --yellow: #fff45c;
+    --highlight-border: #16a34a;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: var(--text);
+  }
+
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .input-panel {
+    border: 2px solid var(--dark);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+
+  .input-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    color: var(--dark);
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .input-row label {
+    font-size: 21px;
+    font-weight: 700;
+  }
+
+  .input-row input {
+    font-size: 24px;
+    font-weight: 800;
+    padding: 12px;
+    border: 3px solid var(--highlight-border);
+    background: var(--yellow);
+    border-radius: 6px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .optional-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 120px;
+    gap: 12px;
+    align-items: center;
+    margin-top: 18px;
+  }
+
+  .optional-row label {
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  .optional-row input {
+    font-size: 22px;
+    font-weight: 800;
+    padding: 10px;
+    border: 2px solid #999;
+    background: #ffffff;
+    border-radius: 6px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .small-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .app {
+    border: 1px solid #e2e5ea;
+    margin-bottom: 48px;
+  }
+
+  .top-bar {
+    height: 112px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.03) 25%, transparent 25%) -20px 0/40px 40px,
+      linear-gradient(225deg, rgba(255,255,255,0.03) 25%, transparent 25%) -20px 0/40px 40px,
+      linear-gradient(315deg, rgba(255,255,255,0.03) 25%, transparent 25%) 0 0/40px 40px,
+      linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%) 0 0/40px 40px,
+      var(--dark2);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    color: white;
+  }
+
+  .logo-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .logo-icon {
+    width: 82px;
+    height: 52px;
+    border: 2px solid white;
+    background: #6bbf59;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    letter-spacing: 0;
+    margin-top: 4px;
+  }
+
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: 54px;
+    background: #f2f2f7;
+    margin: 0 64px;
+  }
+
+  .nav div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #a4a8b3;
+    border-top: 5px solid transparent;
+  }
+
+  .nav .active {
+    color: var(--text);
+    border-top-color: var(--green);
+    background: #ececf2;
+  }
+
+  .screen {
+    padding: 70px 70px 60px;
+  }
+
+  .screen-title {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    border-bottom: 3px solid #e8eaef;
+    padding-bottom: 14px;
+    margin-bottom: 36px;
+  }
+
+  .screen-title h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--text);
+  }
+
+  .screen-title .divider {
+    font-size: 32px;
+    color: #d6d9df;
+  }
+
+  .screen-title .subtitle {
+    font-size: 20px;
+    font-style: italic;
+    color: #aeb3bd;
+    font-weight: 500;
+  }
+
+  .terms-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .promo-card {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+    border: 1px solid #d5d8df;
+  }
+
+  .promo-top,
+  .promo-bottom {
+    height: 80px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.03) 25%, transparent 25%) -20px 0/40px 40px,
+      linear-gradient(225deg, rgba(255,255,255,0.03) 25%, transparent 25%) -20px 0/40px 40px,
+      linear-gradient(315deg, rgba(255,255,255,0.03) 25%, transparent 25%) 0 0/40px 40px,
+      linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%) 0 0/40px 40px,
+      var(--dark2);
+  }
+
+  .promo-body {
+    padding: 24px;
+    font-size: 34px;
+    line-height: 1.25;
+    background: white;
+  }
+
+  .promo-price {
+    font-size: 54px;
+    font-weight: 900;
+    margin: 8px 0;
+  }
+
+  .promo-small {
+    font-size: 16px;
+    line-height: 2;
+  }
+
+  .promo-button {
+    background: #4966e8;
+    color: white;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: center;
+    padding: 12px;
+    letter-spacing: 1px;
+  }
+
+  .terms-content {
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 36px;
+  }
+
+  .terms-lines {
+    width: 100%;
+  }
+
+  .terms-line {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    align-items: center;
+    min-height: 62px;
+    border-bottom: 3px solid #edf0f5;
+  }
+
+  .terms-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: #777;
+  }
+
+  .terms-value {
+    font-size: 20px;
+    text-align: right;
+  }
+
+  .answer {
+    display: inline-block;
+    min-width: 130px;
+    padding: 8px 12px;
+    background: var(--yellow);
+    border: 3px solid var(--highlight-border);
+    border-radius: 6px;
+    font-weight: 900;
+    color: #001c2b;
+    text-align: center;
+  }
+
+  .answer.wide {
+    min-width: 250px;
+    text-align: center;
+  }
+
+  .change-note {
+    font-size: 13px;
+    color: #777;
+    text-align: center;
+    padding: 12px;
+    border-bottom: 3px solid #edf0f5;
+  }
+
+  .method-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #777;
+    margin-bottom: 20px;
+  }
+
+  .method-row {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 18px;
+    color: #777;
+  }
+
+  .checkbox {
+    width: 34px;
+    height: 34px;
+    background: #f0f0f6;
+    border: 1px solid #d7d9e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 24px;
+    color: white;
+  }
+
+  .checkbox.checked {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .placeholder-box {
+    background: #f2f3f8;
+    min-height: 150px;
+    margin-top: 36px;
+  }
+
+  .legal {
+    margin-top: 70px;
+    max-width: 650px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #888;
+  }
+
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) 1.42fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .schedule-col-title {
+    font-size: 19px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .payment-box {
+    background: #f1f3f8;
+    min-height: 74px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  .payment-label {
+    font-size: 12px;
+    color: #a6abb5;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .payment-amount {
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .payment-amount .answer {
+    min-width: 120px;
+  }
+
+  .green-box {
+    background: var(--green);
+    color: white;
+    min-height: 74px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    position: relative;
+  }
+
+  .green-box .payment-label {
+    color: white;
+    opacity: .9;
+  }
+
+  .green-box .answer {
+    background: #ffffff;
+    color: var(--green);
+    border-color: #ffffff;
+  }
+
+  .finance-detail-box {
+    background: #f1f3f8;
+    min-height: 74px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  .balance-row {
+    display: grid;
+    grid-template-columns: 1fr 130px 34px 1fr 130px 34px;
+    align-items: center;
+    gap: 12px;
+    margin-top: 34px;
+    max-width: 760px;
+  }
+
+  .balance-label {
+    font-size: 15px;
+    font-weight: 900;
+    text-align: right;
+  }
+
+  .green-money {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--green);
+    text-align: center;
+  }
+
+  .green-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  .save-button {
+    margin-top: 70px;
+    margin-left: auto;
+    width: 360px;
+    background: var(--green);
+    color: white;
+    text-align: center;
+    padding: 26px;
+    font-size: 28px;
+    font-weight: 900;
+    border-radius: 7px;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 950px) {
+    .page {
+      padding: 12px;
+    }
+
+    .input-row {
+      grid-template-columns: 1fr;
+    }
+
+    .optional-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .optional-row label {
+      grid-column: 1 / -1;
+    }
+
+    .screen {
+      padding: 36px 20px;
+    }
+
+    .terms-layout,
+    .terms-content,
+    .schedule-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .promo-card {
+      display: none;
+    }
+
+    .nav {
+      margin: 0;
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+
+    .nav div {
+      padding: 12px;
+    }
+
+    .terms-line {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 12px 0;
+    }
+
+    .terms-value {
+      text-align: left;
+    }
+
+    .balance-row {
+      grid-template-columns: 1fr;
+      text-align: left;
+    }
+
+    .balance-label {
+      text-align: left;
+    }
+
+    .save-button {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <section class="input-panel">
+    <div class="input-title">PAF Calculator</div>
+
+    <div class="input-row">
+      <label for="projectTotal">How much is the full project total?</label>
+      <input id="projectTotal" type="text" value="0" inputmode="decimal" oninput="calculate()" />
+    </div>
+
+    <div class="input-row">
+      <label for="outOfPocket">How much is the customer going to pay out of pocket? <br>(Example: 10%, $1000, $5000, etc.)</label>
+      <input id="outOfPocket" type="text" value="0" inputmode="decimal" oninput="calculate()" />
+    </div>
+
+    <div class="optional-row">
+      <label>OPTIONAL: How many Windows? How many Doors?</label>
+
+      <div>
+        <div class="small-label">Windows</div>
+        <input id="windowCount" type="number" min="0" step="1" placeholder="0" oninput="calculate()" />
+      </div>
+
+      <div>
+        <div class="small-label">Doors</div>
+        <input id="doorCount" type="number" min="0" step="1" placeholder="0" oninput="calculate()" />
+      </div>
+    </div>
+  </section>
+
+  <section class="app">
+    <div class="top-bar">
+      <div class="logo-box">
+        <div class="logo-icon">▣</div>
+        <div>
+          RENEWAL<br>by ANDERSEN
+          <div class="logo-sub">FULL-SERVICE WINDOW &amp; DOOR REPLACEMENT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <div>1. CONFIRM</div>
+      <div class="active">2. TERMS</div>
+      <div>3. PAYMENT SCHEDULE</div>
+      <div>4. AGREEMENT DOCS</div>
+      <div>5. SUBMIT</div>
+    </div>
+
+    <div class="screen">
+      <div class="screen-title">
+        <h1>PAYMENT TERMS</h1>
+        <div class="divider">|</div>
+        <div class="subtitle">CONFIRM PAYMENT</div>
+      </div>
+
+      <div class="terms-layout">
+        <div class="promo-card">
+          <div class="promo-top"></div>
+          <div class="promo-body">
+            No Money Down<br>
+            No Interest<br>
+            No Payments
+            <div class="promo-price">$0</div>
+            <div class="promo-small">
+              FOR 6 MONTHS<br>
+              0 UNITS MINIMUM<br>
+              OR $0 PROJECT
+            </div>
+          </div>
+          <div class="promo-button">GO BACK TO EDIT TERMS</div>
+          <div class="promo-bottom"></div>
+        </div>
+
+        <div class="terms-content">
+          <div class="terms-lines">
+            <div class="terms-line">
+              <div class="terms-label">Total Job Amount</div>
+              <div class="terms-value"><span class="answer" id="termsTotalJobAmount">$0.00</span></div>
+            </div>
+
+            <div class="terms-line">
+              <div class="terms-label">Down Payment Received</div>
+              <div class="terms-value"><span class="answer" id="termsDownPayment">$0.00</span></div>
+            </div>
+
+            <div class="terms-line">
+              <div class="terms-label">Balance Due</div>
+              <div class="terms-value"><span class="answer" id="termsBalanceDue">$0.00</span></div>
+            </div>
+
+            <div class="change-note">
+              To make changes to the above payment terms, return to Price Presentation
+            </div>
+
+            <div class="terms-line">
+              <div class="terms-label">Amount Financed</div>
+              <div class="terms-value"><span class="answer" id="termsAmountFinanced">$0.00</span></div>
+            </div>
+
+            <div class="terms-line">
+              <div class="terms-label">Estimated Start</div>
+              <div class="terms-value"><span class="answer wide">Please Reference Ky's Lead Times Chart</span></div>
+            </div>
+
+            <div class="terms-line">
+              <div class="terms-label">Estimated Completion</div>
+              <div class="terms-value"><span class="answer wide" id="termsEstimatedCompletion"></span></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="method-title">Method of Payment:</div>
+
+            <div class="method-row">
+              <div class="checkbox" id="checkCash"></div>
+              <div>Cash</div>
+            </div>
+
+            <div class="method-row">
+              <div class="checkbox" id="checkCheck"></div>
+              <div>Check</div>
+            </div>
+
+            <div class="method-row">
+              <div class="checkbox" id="checkCreditCard"></div>
+              <div>Credit Card</div>
+            </div>
+
+            <div class="method-row">
+              <div class="checkbox" id="checkFinancing"></div>
+              <div>Financing</div>
+            </div>
+
+            <div class="placeholder-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legal">
+        Individual payment terms vary subject to payment option selected. Please review the specific terms for details pertaining to your selected payment option.
+        Financing is provided by a third-party lender not affiliated with Renewal by Andersen. Renewal by Andersen is neither a broker nor a lender, and all financing is subject to terms and conditions to be negotiated and agreed upon between the customer and the lender.
+        Any references to finance rates or terms are estimates only.
+      </div>
+    </div>
+  </section>
+
+  <section class="app">
+    <div class="top-bar">
+      <div class="logo-box">
+        <div class="logo-icon">▣</div>
+        <div>
+          RENEWAL<br>by ANDERSEN
+          <div class="logo-sub">FULL-SERVICE WINDOW &amp; DOOR REPLACEMENT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <div>1. CONFIRM</div>
+      <div>2. TERMS</div>
+      <div class="active">3. PAYMENT SCHEDULE</div>
+      <div>4. AGREEMENT DOCS</div>
+      <div>5. SUBMIT</div>
+    </div>
+
+    <div class="screen">
+      <div class="screen-title">
+        <h1>PAYMENT SCHEDULE</h1>
+        <div class="divider">|</div>
+        <div class="subtitle">HOW WOULD YOU LIKE TO COMPLETE PAYMENT?</div>
+      </div>
+
+      <div class="schedule-grid">
+        <div>
+          <div class="schedule-col-title">CASH DEPOSIT</div>
+
+          <div class="payment-box">
+            <div class="payment-label">Credit Card</div>
+            <div class="payment-amount"><span class="answer" id="cashDepositCreditCard">$0.00</span></div>
+          </div>
+
+          <div class="payment-box">
+            <div class="payment-label">Financing</div>
+            <div class="payment-amount"><span class="answer" id="cashDepositFinancing">$0.00</span></div>
+          </div>
+
+          <div class="green-box">
+            <div class="payment-label">Outstanding</div>
+            <div class="payment-amount"><span class="answer" id="cashDepositTotal">$0.00</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="schedule-col-title">FINANCED DEPOSIT</div>
+
+          <div class="payment-box">
+            <div class="payment-label">Credit Card</div>
+            <div class="payment-amount"><span class="answer" id="financedDepositCreditCard">$0.00</span></div>
+          </div>
+
+          <div class="payment-box">
+            <div class="payment-label">Financing</div>
+            <div class="payment-amount"><span class="answer" id="financedDepositFinancing">$0.00</span></div>
+          </div>
+
+          <div class="green-box">
+            <div class="payment-label">Total</div>
+            <div class="payment-amount"><span class="answer" id="financedDepositTotal">$0.00</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="schedule-col-title">SUBSTANTIAL COMPLETION</div>
+
+          <div class="payment-box">
+            <div class="payment-label">Credit Card</div>
+            <div class="payment-amount"><span class="answer" id="substantialCreditCard">$0.00</span></div>
+          </div>
+
+          <div class="payment-box">
+            <div class="payment-label">Financing</div>
+            <div class="payment-amount"><span class="answer" id="substantialFinancing">$0.00</span></div>
+          </div>
+
+          <div class="green-box">
+            <div class="payment-label">Total</div>
+            <div class="payment-amount"><span class="answer" id="substantialTotal">$0.00</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="schedule-col-title">FINANCE DETAILS</div>
+
+          <div class="finance-detail-box">
+            <div class="payment-label">Application ID</div>
+          </div>
+
+          <div class="finance-detail-box">
+            <div class="payment-label">Finance Program</div>
+          </div>
+
+          <div class="finance-detail-box">
+            <div class="payment-label">Finance Plan #</div>
+          </div>
+
+          <div class="finance-detail-box">
+            <div class="payment-label">Offer Expiration Date</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="balance-row">
+        <div class="balance-label">REMAINING CONTRACT BALANCE</div>
+        <div class="green-money" id="remainingContractBalance">$0.00</div>
+        <div class="green-check">✓</div>
+
+        <div class="balance-label">REMAINING FINANCE BALANCE</div>
+        <div class="green-money" id="remainingFinanceBalance">$0.00</div>
+        <div class="green-check">✓</div>
+      </div>
+
+      <div class="save-button">SAVE &amp; CONTINUE</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function parseMoneyToCents(value) {
+  let raw = String(value || "").trim();
+  if (raw === "") return 0;
+
+  raw = raw.replace(/[$,\s]/g, "");
+
+  if (raw === "" || raw === "." || raw === "-") return 0;
+
+  let negative = raw.startsWith("-");
+  if (negative) raw = raw.slice(1);
+
+  let parts = raw.split(".");
+  let whole = parts[0] || "0";
+  let decimal = parts[1] || "";
+
+  whole = whole.replace(/[^\d]/g, "");
+  decimal = decimal.replace(/[^\d]/g, "");
+
+  let dollars = parseInt(whole || "0", 10);
+  let cents = parseInt((decimal + "00").slice(0, 2), 10);
+
+  let totalCents = (dollars * 100) + cents;
+  return negative ? -totalCents : totalCents;
+}
+
+function parseOutOfPocketToCents(value, projectTotalCents) {
+  let raw = String(value || "").trim();
+
+  if (raw.includes("%")) {
+    let pct = parseFloat(raw.replace(/[%,$,\s]/g, ""));
+    if (!isFinite(pct) || pct < 0) return 0;
+    return Math.trunc(projectTotalCents * pct / 100);
+  }
+
+  return parseMoneyToCents(raw);
+}
+
+function money(cents) {
+  cents = Math.trunc(cents || 0);
+
+  let negative = cents < 0;
+  let absolute = Math.abs(cents);
+
+  let dollars = Math.floor(absolute / 100);
+  let centPart = absolute % 100;
+
+  return `${negative ? "-" : ""}$${dollars.toLocaleString("en-US")}.${String(centPart).padStart(2, "0")}`;
+}
+
+function wholeNumber(value) {
+  let n = parseInt(value, 10);
+  if (!isFinite(n) || n < 0) return 0;
+  return n;
+}
+
+function setText(id, value) {
+  document.getElementById(id).textContent = value;
+}
+
+function setCheckbox(id, checked) {
+  const box = document.getElementById(id);
+  box.classList.toggle("checked", checked);
+  box.textContent = checked ? "✓" : "";
+}
+
+function setCompletionText() {
+  let windows = wholeNumber(document.getElementById("windowCount").value);
+  let doors = wholeNumber(document.getElementById("doorCount").value);
+
+  if (windows === 0 && doors === 0) {
+    setText("termsEstimatedCompletion", "");
+    return;
+  }
+
+  let totalHours = (windows * 2) + (doors * 6);
+  let estimatedDays = (totalHours / 8) + 2;
+
+  let lowDays = Math.floor(estimatedDays);
+  let highDays = lowDays + 2;
+
+  setText("termsEstimatedCompletion", `${lowDays} to ${highDays} days`);
+}
+
+function calculate() {
+  let projectTotal = parseMoneyToCents(document.getElementById("projectTotal").value);
+  if (projectTotal < 0) projectTotal = 0;
+
+  let outOfPocket = parseOutOfPocketToCents(document.getElementById("outOfPocket").value, projectTotal);
+  if (outOfPocket < 0) outOfPocket = 0;
+  if (outOfPocket > projectTotal) outOfPocket = projectTotal;
+
+  let amountFinanced = projectTotal - outOfPocket;
+
+  let initialDepositLimit = Math.min(Math.trunc(projectTotal * 10 / 100), 100000);
+  let payment1 = outOfPocket > 0 ? Math.min(outOfPocket, initialDepositLimit) : 0;
+
+  let requiredDepositTotal = Math.trunc(projectTotal * 33 / 100);
+  let payment2 = Math.max(requiredDepositTotal - payment1, 0);
+
+  let payment3 = projectTotal - payment1 - payment2;
+
+  let remainingOutOfPocket = outOfPocket;
+
+  let oop1 = Math.min(remainingOutOfPocket, payment1);
+  let fin1 = payment1 - oop1;
+  remainingOutOfPocket -= oop1;
+
+  let oop2 = Math.min(remainingOutOfPocket, payment2);
+  let fin2 = payment2 - oop2;
+  remainingOutOfPocket -= oop2;
+
+  let oop3 = Math.min(remainingOutOfPocket, payment3);
+  let fin3 = payment3 - oop3;
+  remainingOutOfPocket -= oop3;
+
+  let totalByStage1 = oop1 + fin1;
+  let totalByStage2 = oop2 + fin2;
+  let totalByStage3 = oop3 + fin3;
+
+  let totalFinancingCollected = fin1 + fin2 + fin3;
+
+  let balanceDue = projectTotal - payment1;
+  let remainingContractBalance = projectTotal - totalByStage1 - totalByStage2 - totalByStage3;
+  let remainingFinanceBalance = amountFinanced - totalFinancingCollected;
+
+  setText("termsTotalJobAmount", money(projectTotal));
+  setText("termsDownPayment", money(payment1));
+  setText("termsBalanceDue", money(balanceDue));
+  setText("termsAmountFinanced", money(amountFinanced));
+
+  setCheckbox("checkCash", false);
+  setCheckbox("checkCheck", false);
+  setCheckbox("checkCreditCard", outOfPocket > 0);
+  setCheckbox("checkFinancing", amountFinanced > 0);
+
+  setText("cashDepositCreditCard", money(oop1));
+  setText("cashDepositFinancing", money(fin1));
+  setText("cashDepositTotal", money(totalByStage1));
+
+  setText("financedDepositCreditCard", money(oop2));
+  setText("financedDepositFinancing", money(fin2));
+  setText("financedDepositTotal", money(totalByStage2));
+
+  setText("substantialCreditCard", money(oop3));
+  setText("substantialFinancing", money(fin3));
+  setText("substantialTotal", money(totalByStage3));
+
+  setText("remainingContractBalance", money(remainingContractBalance));
+  setText("remainingFinanceBalance", money(remainingFinanceBalance));
+
+  setCompletionText();
+}
+
+calculate();
+</script>
+
+</body>
+</html>
